@@ -203,6 +203,9 @@ ask_config() {
 generate_configs() {
     echo -e "${YELLOW}[!] Generating configuration files...${NC}"
 
+    # Create config directory if not exists
+    mkdir -p config
+
     # Create .env file
     cat > .env << EOF
 # ============================================================
