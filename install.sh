@@ -296,7 +296,7 @@ outlet: !include outlet.yaml
 console: !include console.yaml
 EOF
 
-    # Create inlet.yaml
+    # Create inlet.yaml - MUST have colon prefix for all ports
     cat > config/inlet.yaml << EOF
 flow:
   inputs:
