@@ -134,8 +134,8 @@ ask_config() {
     echo -e "${CYAN}╚═══════════════════════════════════════════════════╝${NC}"
     echo ""
 
-    # Server IP
-    DEFAULT_IP=$(hostname -I 2>/dev/null || ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -1)
+    # Server IP - detect the main IP used for internet access
+    DEFAULT_IP=$(ip -4 route get 8.8.8.8 2>/dev/null | grep -oP 'src \K[\d.]+' || ip -4 addr show | grep -v '127.0.0.1' | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
     read -p "Server IP Address [${DEFAULT_IP}]: " SERVER_IP
     SERVER_IP=${SERVER_IP:-$DEFAULT_IP}
 
