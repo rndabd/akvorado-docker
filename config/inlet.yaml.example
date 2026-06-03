@@ -1,0 +1,25 @@
+# Akvorado Inlet Configuration
+# Flow input configuration
+
+flow:
+  inputs:
+    # NetFlow v5/v9/IPFIX
+    - type: udp
+      decoder: netflow
+      listen: :2055
+      workers: 4
+      receive-buffer: 212992
+
+    # IPFIX (alternative port)
+    - type: udp
+      decoder: netflow
+      listen: :4739
+      workers: 4
+      receive-buffer: 212992
+
+    # sFlow
+    - type: udp
+      decoder: sflow
+      listen: :6343
+      workers: 4
+      receive-buffer: 212992

@@ -1,0 +1,34 @@
+snmp:
+  name: demo-mikrotik
+  listen: ":1161"
+  interfaces:
+    1: ether1-WAN
+    2: ether2-LAN
+flows:
+  target: akvorado-inlet:2055
+  samplingrate: 1000
+  flows:
+    - persecond: 5
+      inifindex: [1]
+      outifindex: [2]
+      peakhour: 10h
+      multiplier: 3
+      srcnet: 10.10.10.0/24
+      dstnet: 0.0.0.0/0
+      srcas: [64501]
+      dstas: [15169, 16509, 2906]
+      srcport: [1024, 1025, 1026, 1027, 1028]
+      dstport: [80, 443]
+      protocol: [tcp, udp]
+    - persecond: 3
+      inifindex: [2]
+      outifindex: [1]
+      peakhour: 10h
+      multiplier: 3
+      srcnet: 0.0.0.0/0
+      dstnet: 10.10.10.0/24
+      srcas: [15169, 16509, 2906]
+      dstas: [64501]
+      srcport: [80, 443]
+      dstport: [1024, 1025, 1026, 1027, 1028]
+      protocol: [tcp, udp]

@@ -1,0 +1,43 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Configuration files (keep examples)
+config/akvorado.yaml
+config/inlet.yaml
+config/outlet.yaml
+config/console.yaml
+
+# Docker volumes
+akvorado-kafka/
+akvorado-geoip/
+akvorado-clickhouse/
+akvorado-run/
+akvorado-console-db/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# Docker
+docker-compose.override.yml

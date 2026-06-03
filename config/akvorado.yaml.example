@@ -1,0 +1,59 @@
+# Akvorado Main Configuration
+# See: https://akvorado.readthedocs.io/
+
+kafka:
+  topic: flows
+  brokers:
+    - kafka:9092
+  topic-configuration:
+    num-partitions: 1
+    replication-factor: 1
+    config-entries:
+      segment.bytes: 1073741824
+      retention.ms: 86400000
+      cleanup.policy: delete
+      compression.type: producer
+
+geoip:
+  optional: true
+  asn-database:
+    - /usr/share/GeoIP/asn.mmdb
+  geo-database:
+    - /usr/share/GeoIP/country.mmdb
+
+clickhousedb:
+  servers:
+    - clickhouse:9000
+
+clickhouse:
+  orchestrator-url: http://akvorado-orchestrator:8080
+  asns:
+    # Add your AS numbers here
+    # Format: AS_NUMBER: Company Name
+    64501: MikroTik Network
+    2906: Netflix
+    15169: Google
+    32934: Meta (Facebook)
+    16509: Amazon
+    13335: Cloudflare
+    8075: Microsoft
+    20940: Akamai Technologies
+    54113: Fastly
+    174: Cogent Communications
+    3356: Lumen (Level3)
+    6939: Hurricane Electric
+    7018: AT&T
+    701: Verizon
+    # Add more AS names as needed
+  networks:
+    # Configure your networks here
+    # Format: CIDR:
+    #   name: network-name
+    #   role: internal|external|customers|servers
+    192.168.1.0/24:
+      name: my-network
+      role: internal
+
+inlet: !include inlet.yaml
+outlet: !include outlet.yaml
+console: !include console.yaml

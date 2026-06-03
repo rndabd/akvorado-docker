@@ -1,0 +1,39 @@
+# Akvorado Outlet Configuration
+# SNMP and metadata configuration
+
+metadata:
+  providers:
+    - type: snmp
+      # SNMP port on exporters (usually 161)
+      ports:
+        ::/0: 161
+      credentials:
+        # SNMP community string
+        ::/0:
+          communities: public
+
+routing:
+  provider:
+    type: bmp
+    receive-buffer: 212992
+
+core:
+  # Exporter classifiers - classify based on exporter name
+  exporter-classifiers:
+    - ClassifySiteRegex(Exporter.Name, "^([^-]+)-", "$1")
+    - ClassifyRegion("indonesia")
+    - ClassifyTenant("default")
+    - ClassifyRole("edge")
+
+  # Interface classifiers - classify based on interface description
+  interface-classifiers:
+    # WAN interfaces = external
+    - |
+      ClassifyConnectivityRegex(Interface.Description, "(?i)WAN", "transit") &&
+      ClassifyExternal()
+    # LAN interfaces = internal
+    - |
+      ClassifyConnectivityRegex(Interface.Description, "(?i)LAN", "pni") &&
+      ClassifyInternal()
+    # Default = internal
+    - ClassifyInternal()
