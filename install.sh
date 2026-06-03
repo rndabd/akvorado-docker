@@ -135,7 +135,7 @@ ask_config() {
     echo ""
 
     # Server IP
-    DEFAULT_IP=$(hostname -I | awk '{print $1}')
+    DEFAULT_IP=$(hostname -I 2>/dev/null || ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -1)
     read -p "Server IP Address [${DEFAULT_IP}]: " SERVER_IP
     SERVER_IP=${SERVER_IP:-$DEFAULT_IP}
 
