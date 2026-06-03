@@ -79,7 +79,18 @@ install_docker() {
             apk update
             apk add docker docker-compose docker-cli-compose
             rc-update add docker boot
-            service docker start
+            # Fix cgroup issues on Alpine
+            mkdir -p /sys/fs/cgroup
+            service docker start || true
+            # Wait for Docker to be ready
+            sleep 5
+            # Check if Docker is running
+            if ! docker info >/dev/null 2>&1; then
+                echo -e "${YELLOW}[!] Docker may have issues. Trying to fix...${NC}"
+                # Try to start Docker with different options
+                dockerd --storage-driver=vfs &
+                sleep 10
+            fi
             ;;
         arch|manjaro)
             pacman -Syu --noconfirm docker docker-compose
@@ -537,14 +548,23 @@ start_services() {
 wait_for_services() {
     echo -e "${YELLOW}[!] Waiting for services to be healthy...${NC}"
 
-    local max_wait=120
+    local max_wait=180
     local waited=0
 
     while [ $waited -lt $max_wait ]; do
-        local healthy=$(docker compose ps --format json | grep -c '"healthy"')
-        local total=$(docker compose ps --format json | wc -l)
+        local healthy=$(docker compose ps --format json 2>/dev/null | grep -c '"healthy"' || echo 0)
+        local total=$(docker compose ps --format json 2>/dev/null | wc -l || echo 0)
+        local errored=$(docker compose ps --format json 2>/dev/null | grep -c '"exited"' || echo 0)
 
-        if [ $healthy -ge 6 ]; then
+        if [ "$errored" -gt 0 ]; then
+            echo ""
+            echo -e "${RED}[✗] Some containers failed to start!${NC}"
+            echo -e "${YELLOW}[!] Check logs with: docker compose logs${NC}"
+            docker compose ps
+            return 1
+        fi
+
+        if [ "$healthy" -ge 6 ]; then
             echo -e "${GREEN}[✓] All services healthy${NC}"
             return 0
         fi
