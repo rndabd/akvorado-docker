@@ -17,6 +17,8 @@ services:
     image: apache/kafka:4.2.0
     hostname: kafka
     container_name: akvorado-kafka
+    ports:
+      - "9092:9092"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: controller,broker
@@ -106,17 +108,19 @@ services:
     image: ghcr.io/akvorado/akvorado:latest
     hostname: inlet
     container_name: akvorado-inlet
-    ports:
-      - "${NETFLOW_PORT:-2055}:2055/udp"
-      - "${IPFIX_PORT:-4739}:4739/udp"
-      - "${SFLOW_PORT:-6343}:6343/udp"
+    network_mode: host
+    extra_hosts:
+      - "kafka:127.0.0.1"
+      - "redis:127.0.0.1"
+      - "clickhouse:127.0.0.1"
+      - "akvorado-orchestrator:127.0.0.1"
     restart: unless-stopped
     depends_on:
       akvorado-orchestrator:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    command: inlet http://akvorado-orchestrator:8080
+    command: inlet http://172.18.0.5:8080
     volumes:
       - akvorado-run:/run/akvorado
 
