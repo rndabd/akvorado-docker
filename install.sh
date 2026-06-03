@@ -552,11 +552,21 @@ wait_for_services() {
     local waited=0
 
     while [ $waited -lt $max_wait ]; do
-        local healthy=$(docker compose ps --format json 2>/dev/null | grep -c '"healthy"' || echo 0)
-        local total=$(docker compose ps --format json 2>/dev/null | wc -l || echo 0)
-        local errored=$(docker compose ps --format json 2>/dev/null | grep -c '"exited"' || echo 0)
+        local healthy=$(docker compose ps 2>/dev/null | grep -c "healthy" || true)
+        local total=$(docker compose ps 2>/dev/null | wc -l || true)
+        local errored=$(docker compose ps 2>/dev/null | grep -c "exited" || true)
 
-        if [ "$errored" -gt 0 ]; then
+        # Ensure values are integers
+        healthy=${healthy:-0}
+        total=${total:-0}
+        errored=${errored:-0}
+
+        # Remove any whitespace/newlines
+        healthy=$(echo "$healthy" | tr -d '[:space:]')
+        total=$(echo "$total" | tr -d '[:space:]')
+        errored=$(echo "$errored" | tr -d '[:space:]')
+
+        if [ "$errored" -gt 0 ] 2>/dev/null; then
             echo ""
             echo -e "${RED}[✗] Some containers failed to start!${NC}"
             echo -e "${YELLOW}[!] Check logs with: docker compose logs${NC}"
@@ -564,7 +574,7 @@ wait_for_services() {
             return 1
         fi
 
-        if [ "$healthy" -ge 6 ]; then
+        if [ "$healthy" -ge 6 ] 2>/dev/null; then
             echo -e "${GREEN}[✓] All services healthy${NC}"
             return 0
         fi
