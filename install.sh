@@ -307,7 +307,7 @@ flow:
       receive-buffer: 212992
     - type: udp
       decoder: netflow
-      listen: 4739
+      listen: :4739
       workers: 4
       receive-buffer: 212992
     - type: udp
