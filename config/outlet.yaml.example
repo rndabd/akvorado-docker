@@ -18,6 +18,10 @@ routing:
     receive-buffer: 212992
 
 core:
+  # Default sampling rate when not provided by exporter
+  # MikroTik does not send sampling rate when packet-sampling is disabled
+  default-sampling-rate:
+    ::/0: 1
   # Exporter classifiers - classify based on exporter name
   exporter-classifiers:
     - ClassifySiteRegex(Exporter.Name, "^([^-]+)-", "$1")

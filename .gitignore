@@ -16,6 +16,9 @@ akvorado-clickhouse/
 akvorado-run/
 akvorado-console-db/
 
+# GeoIP databases (downloaded, too large for git)
+geoip/
+
 # Logs
 *.log
 logs/
